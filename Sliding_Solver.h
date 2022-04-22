@@ -14,4 +14,5 @@ public:
 	Sliding_Solver(const string& start_config, string& goal_config);
 	pair<int, string> solve_puzzle();
 	int calculate_heuristic_value(Board_Tile* board);
+	unordered_map<int, pair<int, int>> get_map();
 };
