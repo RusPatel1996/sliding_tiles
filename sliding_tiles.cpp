@@ -2,10 +2,15 @@
 //
 
 #include <iostream>
+#include "Sliding_Solver.h"
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	string start = "123745086";
+	string goal = "123456780";
+
+	Sliding_Solver solver(start, goal);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
