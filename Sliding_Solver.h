@@ -18,5 +18,4 @@ public:
 	Sliding_Solver(const string& start_state, string& goal_state);
 	pair<int, string> solve_puzzle();
 	int calculate_heuristic_value(Board_Tile* board);
-	vector<int> board_to_vector(Board_Tile* board);
 };

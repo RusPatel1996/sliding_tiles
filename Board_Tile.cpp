@@ -4,21 +4,12 @@
 // Board_Tile Constructor used for creating a object state from a string, typically used to initialize the start state and goal state
 // @params: String representing a state
 Board_Tile::Board_Tile(const string& state) {
-	vector<int> row;
-
-	// convert state string to the 2D int tile board
 	for (int i = 0; i < 9; ++i) {
 		int num = state[i] - '0';
 
-		row.push_back(num);
-
-		if (row.size() == 3) {
-			this->tile_board.push_back(row);
-			row.clear();
-		}
-
+		this->tile_board.push_back(num);
 		if (num == 0) {
-			this->blank_pos = make_pair(floor(i / 3), i % 3);
+			this->blank_pos = i;
 		}
 	}
 
@@ -29,7 +20,7 @@ Board_Tile::Board_Tile(const string& state) {
 
 // Board_Tile Constructor for creating subsequent objects with initialized data members.
 // @params 2D Vector Board, String indicating direction moved, Int indicating total moves leading up to the current state, pair of ints indicating the new blank space position
-Board_Tile::Board_Tile(const vector<vector<int>>& board, const string& direction_moved, const int total_moves, const pair<int, int>& blank_pos)
+Board_Tile::Board_Tile(const vector<int>& board, const string& direction_moved, const int total_moves, const int blank_pos)
 {
 	this->tile_board = board;
 	this->moves_from_start = direction_moved;
@@ -45,14 +36,11 @@ Board_Tile::Board_Tile(const vector<vector<int>>& board, const string& direction
 // @params two Board_Tile objects
 // @return bool indicating if they are same or not
 bool operator==(const Board_Tile& board1, const Board_Tile& board2) {
-	for (int row = 0; row < 3; ++row) {
-		for (int col = 0; col < 3; ++col) {
-			if (board1.tile_board[row][col] != board2.tile_board[row][col]) {
-				return false;
-			}
+	for (int i = 0; i < 9; ++i) {
+		if (board1.tile_board[i] != board2.tile_board[i]) {
+			return false;
 		}
 	}
-
 	return true;
 }
 
@@ -64,18 +52,21 @@ bool operator==(const Board_Tile& board1, const Board_Tile& board2) {
 ostream& operator<<(ostream& out, const Board_Tile& board) {
 	out << "Current board:" << endl;
 	out << "-------------" << endl;
-	for (auto& row : board.tile_board) {
+	int count = 0;
+	for (int i = 0; i < 9; ++i) {
 		out << "| ";
-		for (auto& val : row) {
-			out << val << " | ";
+		out << board.tile_board[i] << " ";
+		count++;
+		if (count % 3 == 0) {
+			out << "|";
+			out << endl;
+			out << "-------------" << endl;
 		}
-		out << endl;
-		out << "-------------" << endl;
 	}
 	out << endl;
 	out << "Number of moves: " << board.num_moves << endl;
 	out << "Moves from start: " << board.moves_from_start << endl;
-	out << "Blank position at x: " << board.blank_pos.first << ", y: " << board.blank_pos.second << endl;
+	out << "Blank position at x: " << floor(board.blank_pos / 3) << ", y: " << board.blank_pos % 3 << endl;
 	out << endl;
 	return out;
 }
@@ -86,40 +77,34 @@ ostream& operator<<(ostream& out, const Board_Tile& board) {
 // 
 // @return Vector of Board_Tile object pointers
 vector<Board_Tile*> Board_Tile::get_next_states() {
-	vector<tuple<int, int, char>> directions = {
-		make_tuple(-1,0,'U'),
-		make_tuple(0, 1,'R'),
-		make_tuple(1, 0,'D'),
-		make_tuple(0,-1,'L')
+	vector<pair<int, char>> directions = {
+		make_pair(-3,'U'),
+		make_pair( 3,'D'),
+		make_pair( 1,'R'),
+		make_pair(-1,'L')
 	};
 	vector<Board_Tile*> next_states;
-	int dir_row; int dir_col; char dir;
-	int blank_row; int blank_col;
-
-	tie(blank_row, blank_col) = this->blank_pos;
+	int blank_pos = this->blank_pos;
 
 	for (auto& direction : directions) {
-		tie(dir_row, dir_col, dir) = direction;
-		dir_row += blank_row;
-		dir_col += blank_col;
+		int next_pos = blank_pos + direction.first;
+		char dir = direction.second;
 
-		if (check_within_bounds(dir_row, dir_col)) {
-			vector<vector<int>> new_board = this->tile_board;
+		if (check_within_bounds(next_pos, dir)) {
+			vector<int> new_board = this->tile_board;
 
 			// swap tiles
-			swap(new_board[dir_row][dir_col], new_board[blank_row][blank_col]);
+			swap(new_board[next_pos], new_board[blank_pos]);
 
 			string updated_moves = this->moves_from_start + dir;
-			int moves = this->num_moves + 1;
-			pair<int, int> new_pos = make_pair(dir_row, dir_col);
+			int total_moves = this->num_moves + 1;
 
 			// create and append new object with updated values
 			next_states.push_back(
-				new Board_Tile(new_board, updated_moves, moves, new_pos)
+				new Board_Tile(new_board, updated_moves, total_moves, next_pos)
 			);
 		}
 	}
-
 	return next_states;
 }
 
@@ -127,8 +112,18 @@ vector<Board_Tile*> Board_Tile::get_next_states() {
 // 
 // @param row index and column index
 // @return bool indicating if valid or not
-bool Board_Tile::check_within_bounds(int row, int col) {
-	return row >= 0 && row < 3 && col >= 0 && col < 3;
+bool Board_Tile::check_within_bounds(int i, char dir) {
+	switch (dir) {
+	case 'U':
+		return i >= 0;
+	case 'D':
+		return i < 9;
+	case 'R':
+		return (i % 3) != 0;
+	case 'L':
+		return (i % 3) != 2 && i >= 0;
+		//return (3 + (i % 3)) % 3 != 2;
+	}
 }
 
 
@@ -139,15 +134,11 @@ bool Board_Tile::check_within_bounds(int row, int col) {
 // @return total manhattan distance calculated from adding thn manhattan distance of each element
 int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_state) {
 	int manhattan_distance = 0;
-
-	for (int row = 0; row < 3; ++row) {
-		for (int col = 0; col < 3; ++col) {
-			int key = this->tile_board[row][col];
-			pair<int, int> pos = goal_state.at(key);
-			manhattan_distance += abs(row - pos.first) + abs(col - pos.second);
-		}
+	for (int i = 0; i < 9; ++i) {
+		int key = this->tile_board[i];
+		pair<int, int> pos = goal_state.at(key);
+		manhattan_distance += abs(floor(i / 3) - pos.first) + abs((i % 3) - pos.second);
 	}
-
 	return manhattan_distance;
 }
 
@@ -158,14 +149,10 @@ int Board_Tile::get_num_moves() {
 	return this->num_moves;
 }
 
-pair<int, int> Board_Tile::get_blank_position() {
-	return this->blank_pos;
-}
-
 string Board_Tile::get_moves_from_start() {
 	return this->moves_from_start;
 }
 
-vector<vector<int>> Board_Tile::get_tile_board() {
+vector<int> Board_Tile::get_board() {
 	return this->tile_board;
 }

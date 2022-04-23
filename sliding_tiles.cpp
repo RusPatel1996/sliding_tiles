@@ -6,7 +6,7 @@ using namespace std::chrono;
 
 int main()
 {
-	string start = "436871052";
+	string start = "436087152";
 	string goal = "123456780";
 
 	Sliding_Solver* solver = new Sliding_Solver(start, goal);
