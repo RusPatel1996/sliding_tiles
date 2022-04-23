@@ -20,11 +20,13 @@ private:
 public:
 	Board_Tile(const string& config);
 	Board_Tile(const vector<vector<int>>& board, const string& direction_moved, const int total_moves, const pair<int, int>& blank_pos);
-	bool operator==(const Board_Tile& board2);
+	friend bool operator==(const Board_Tile& boar1, const Board_Tile& board2);
 	friend ostream& operator<<(ostream& os, const Board_Tile& board);
-	vector<Board_Tile> get_next_configs();
-	bool check_within_bounds(int row, int col);
+	vector<Board_Tile*> get_next_configs();
 	int get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_config);
 	int get_num_moves();
+	pair<int, int> get_blank_position();
 	string get_moves_from_start();
+	vector<vector<int>> get_tile_board();
+	bool check_within_bounds(int row, int col);
 };

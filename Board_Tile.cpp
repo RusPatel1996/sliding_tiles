@@ -32,10 +32,10 @@ Board_Tile::Board_Tile(const vector<vector<int>>& board, const string& direction
 }
 
 
-bool Board_Tile::operator==(const Board_Tile& board2) {
+bool operator==(const Board_Tile& board1, const Board_Tile& board2) {
 	for (int row = 0; row < 3; ++row) {
 		for (int col = 0; col < 3; ++col) {
-			if (this->tile_board[row][col] != board2.tile_board[row][col]) {
+			if (board1.tile_board[row][col] != board2.tile_board[row][col]) {
 				return false;
 			}
 		}
@@ -65,14 +65,14 @@ ostream& operator<<(ostream& out, const Board_Tile& board) {
 }
 
 
-vector<Board_Tile> Board_Tile::get_next_configs() {
+vector<Board_Tile*> Board_Tile::get_next_configs() {
 	vector<tuple<int, int, char>> directions = { // top, right, down, left
 		make_tuple(-1,0,'U'),
 		make_tuple(0, 1,'R'),
 		make_tuple(1, 0,'D'),
 		make_tuple(0,-1,'L')
 	};
-	vector<Board_Tile> next_configs;
+	vector<Board_Tile*> next_configs;
 	int dir_row; int dir_col; char dir;
 	int blank_row; int blank_col;
 
@@ -93,23 +93,19 @@ vector<Board_Tile> Board_Tile::get_next_configs() {
 				}
 				new_board.push_back(r);
 			}
-
-			
 			swap(new_board[dir_row][dir_col], new_board[blank_row][blank_col]);
+
+			string updated_moves = this->moves_from_start + dir;
+			int moves = this->num_moves + 1;
 			pair<int, int> new_pos = make_pair(dir_row, dir_col);
 
 			next_configs.push_back(
-				Board_Tile(new_board, this->moves_from_start + dir, this->num_moves + 1, new_pos)
+				new Board_Tile(new_board, updated_moves, moves, new_pos)
 			);
 		}
 	}
 
 	return next_configs;
-}
-
-
-bool Board_Tile::check_within_bounds(int row, int col) {
-	return row >= 0 && row < 3 && col >= 0 && col < 3;
 }
 
 
@@ -119,19 +115,8 @@ int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int>>&
 	for (int row = 0; row < 3; ++row) {
 		for (int col = 0; col < 3; ++col) {
 			int key = this->tile_board[row][col];
-
-			/* Since this function will be called before we find next configs of a state so we can rest assured that
-			each state will have a blank_pos value */
-			//if (key == 0) {
-			//	this->blank_pos = make_pair(row, col);
-			//	continue;
-			//}
-
 			pair<int, int> pos = goal_config.at(key);
-
 			manhattan_distance += abs(row - pos.first) + abs(col - pos.second);
-
-			
 		}
 	}
 
@@ -143,6 +128,18 @@ int Board_Tile::get_num_moves() {
 	return this->num_moves;
 }
 
+pair<int, int> Board_Tile::get_blank_position() {
+	return this->blank_pos;
+}
+
 string Board_Tile::get_moves_from_start() {
 	return this->moves_from_start;
+}
+
+vector<vector<int>> Board_Tile::get_tile_board() {
+	return this->tile_board;
+}
+
+bool Board_Tile::check_within_bounds(int row, int col) {
+	return row >= 0 && row < 3 && col >= 0 && col < 3;
 }
