@@ -9,22 +9,14 @@ int main()
 	string start = "123745086";
 	string goal = "123456780";
 
-	Sliding_Solver solver(start, goal);
-	unordered_map<int, pair<int, int>> m = solver.get_map();
-	for (auto& i : m)
-	{
-		cout << i.first << ": " << i.second.first << " " << i.second.second << endl;
-	}
-	Board_Tile board(start);
-
-	cout << board << endl;
-	cout << board << endl;
-	cout << board.get_manhattan_distance(m) << endl;
-
-	vector<Board_Tile*> v = board.get_next_configs();
-	for (auto& i : v) {
-		cout << *i;
-	}
+	Sliding_Solver* solver = new Sliding_Solver(start, goal);
+	Board_Tile* board = new Board_Tile(start);
+	//cout << *board;
+	//vector<Board_Tile> next = board->get_next_configs();
+	//for (auto& n : next) {
+	//	cout << n;
+	//}
+	solver->solve_puzzle();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
