@@ -11,11 +11,11 @@ private:
 	priority_queue<pib, vector<pib>, greater<pib>> tile_queue;
 	Board_Tile* starting_board;
 	Board_Tile* final_board;
-	unordered_map<int, pair<int, int>> goal_config_map;
+	unordered_map<int, pair<int, int>> goal_state_map;
 	set<vector<int>> visited;
 
 public:
-	Sliding_Solver(const string& start_config, string& goal_config);
+	Sliding_Solver(const string& start_state, string& goal_state);
 	pair<int, string> solve_puzzle();
 	int calculate_heuristic_value(Board_Tile* board);
 	vector<int> board_to_vector(Board_Tile* board);
