@@ -86,7 +86,7 @@ vector<Board_Tile*> Board_Tile::get_next_states() {
 	vector<Board_Tile*> next_states;
 	int blank_pos = this->blank_pos;
 
-	for (auto& direction : directions) {
+	for (pair<int, int> direction : directions) {
 		int next_pos = blank_pos + direction.first;
 		char dir = direction.second;
 
@@ -122,7 +122,9 @@ bool Board_Tile::check_within_bounds(int i, char dir) {
 		return (i % 3) != 0;
 	case 'L':
 		return (i % 3) != 2 && i >= 0;
-		//return (3 + (i % 3)) % 3 != 2;
+		// reason for the extra i >= 0 condition is that C++ unlike Python 
+		// uses different method of calculating modulus for negative numbers
+		// so -1 % 2 == -1 in C++ and -1 % 2 == 2 in Python...
 	}
 }
 
@@ -135,8 +137,7 @@ bool Board_Tile::check_within_bounds(int i, char dir) {
 int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_state) {
 	int manhattan_distance = 0;
 	for (int i = 0; i < 9; ++i) {
-		int key = this->tile_board[i];
-		pair<int, int> pos = goal_state.at(key);
+		pair<int, int> pos = goal_state.at(this->tile_board[i]);
 		manhattan_distance += abs(floor(i / 3) - pos.first) + abs((i % 3) - pos.second);
 	}
 	return manhattan_distance;

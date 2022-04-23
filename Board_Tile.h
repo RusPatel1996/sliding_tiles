@@ -12,11 +12,10 @@ using namespace std;
 
 class Board_Tile {
 private:
-	vector<int> tile_board;
 	int num_moves;
 	int blank_pos;
 	string moves_from_start;
-	
+	vector<int> tile_board;
 
 public:
 	Board_Tile(const string& state);
@@ -27,6 +26,6 @@ public:
 	int get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_state);
 	int get_num_moves();
 	string get_moves_from_start();
-	bool check_within_bounds(int i, char dir);
+	bool check_within_bounds(const int i, const char dir);
 	vector<int> get_board();
 };

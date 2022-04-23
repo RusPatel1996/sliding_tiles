@@ -15,10 +15,10 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 {
 	// unchanging data members can be stated as variables to reduce function call overhead
 	Board_Tile* start_state = this->starting_board;
-	set<vector<int>> goal_state = { this->final_board->get_board()};
-	
+	set<vector<int>> goal_state = { this->final_board->get_board() };
+
 	this->tile_queue.push(
-		make_pair(calculate_heuristic_value(start_state), start_state)
+		make_pair(get_heuristic_distance(start_state), start_state)
 	);
 	this->visited.insert(starting_board->get_board());
 
@@ -28,7 +28,7 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 		return make_pair(starting_board->get_num_moves(), starting_board->get_moves_from_start());
 	}
 
-	// cout << *start_state << endl; // uncomment to look under the hood
+	// cout << *start_state << endl; // uncomment to peek under the hood
 
 	int number_of_ops = 0; // counts the number of times the loop is executed
 	while (!this->tile_queue.empty()) {
@@ -41,12 +41,12 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 		for (Board_Tile* next_board : board->get_next_states()) {
 			vector<int> key = next_board->get_board();
 			if (!visited.count(key)) {
-				// cout << *next_board << endl; // uncomment to look under the hood
+				// cout << *next_board << endl; // uncomment to peek under the hood
 				if (goal_state.count(key)) {
 					cout << "Number of A* executions: " << number_of_ops << endl;
 					return make_pair(next_board->get_num_moves(), next_board->get_moves_from_start());
 				}
-				int heuristic_distance = calculate_heuristic_value(next_board);
+				int heuristic_distance = get_heuristic_distance(next_board);
 				this->tile_queue.push(make_pair(heuristic_distance, next_board));
 				this->visited.insert(key);
 			}
@@ -57,6 +57,6 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 }
 
 
-int Sliding_Solver::calculate_heuristic_value(Board_Tile* board) {
+int Sliding_Solver::get_heuristic_distance(Board_Tile* board) {
 	return board->get_num_moves() + board->get_manhattan_distance(this->goal_state_map);
 }
