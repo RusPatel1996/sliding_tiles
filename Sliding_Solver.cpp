@@ -45,7 +45,7 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 			if (!visited.count(key)) {
 				// cout << *next_board << endl; // uncomment to look under the hood
 				if (goal_state.count(key)) {
-					cout << "Number of A* operations: " << number_of_ops << endl;
+					cout << "Number of A* executions: " << number_of_ops << endl;
 					return make_pair(next_board->get_num_moves(), next_board->get_moves_from_start());
 				}
 				int heuristic_distance = calculate_heuristic_value(next_board);

@@ -24,7 +24,7 @@ int main()
 
 	cout << "Number of Moves: " << result.first << endl;
 	cout << "Moves: " << result.second << endl;
-	cout << "Time taken = " << diff << endl;
+	cout << "Time taken = " << diff << " nanoseconds" << endl;
 
 	return 0;
 }
