@@ -15,7 +15,7 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 {
 	// unchanging data members can be stated as variables to reduce function call overhead
 	Board_Tile* start_state = this->starting_board;
-	set<vector<int>> goal_state = { this->final_board->get_board() };
+	set<vector<int> > goal_state = { this->final_board->get_board() };
 
 	this->tile_queue.push(
 		make_pair(get_heuristic_distance(start_state), start_state)

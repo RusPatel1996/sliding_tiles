@@ -77,7 +77,7 @@ ostream& operator<<(ostream& out, const Board_Tile& board) {
 // 
 // @return Vector of Board_Tile object pointers
 vector<Board_Tile*> Board_Tile::get_next_states() {
-	vector<pair<int, char>> directions = {
+	vector<pair<int, char> > directions = {
 		make_pair(-3,'U'),
 		make_pair( 3,'D'),
 		make_pair( 1,'R'),
@@ -134,7 +134,7 @@ bool Board_Tile::check_within_bounds(int i, char dir) {
 // 
 // @params a unordered map, mapping int elements in the goal state to their final positions
 // @return total manhattan distance calculated from adding thn manhattan distance of each element
-int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_state) {
+int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int> >& goal_state) {
 	int manhattan_distance = 0;
 	for (int i = 0; i < 9; ++i) {
 		pair<int, int> pos = goal_state.at(this->tile_board[i]);

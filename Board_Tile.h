@@ -23,7 +23,7 @@ public:
 	friend bool operator==(const Board_Tile& boar1, const Board_Tile& board2);
 	friend ostream& operator<<(ostream& os, const Board_Tile& board);
 	vector<Board_Tile*> get_next_states();
-	int get_manhattan_distance(const unordered_map<int, pair<int, int>>& goal_state);
+	int get_manhattan_distance(const unordered_map<int, pair<int, int> >& goal_state);
 	int get_num_moves();
 	string get_moves_from_start();
 	bool check_within_bounds(const int i, const char dir);
