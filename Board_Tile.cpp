@@ -66,6 +66,7 @@ ostream& operator<<(ostream& out, const Board_Tile& board) {
 	out << endl;
 	out << "Number of moves: " << board.num_moves << endl;
 	out << "Moves from start: " << board.moves_from_start << endl;
+	out << "Manhattan Distance: " << board.manhattan_distance << endl;
 	out << "Blank position at x: " << floor(board.blank_pos / 3) << ", y: " << board.blank_pos % 3 << endl;
 	out << endl;
 	return out;
@@ -76,7 +77,7 @@ ostream& operator<<(ostream& out, const Board_Tile& board) {
 // neighbor elements and data members updated
 // 
 // @return Vector of Board_Tile object pointers
-vector<Board_Tile*> Board_Tile::get_next_states() {
+vector<Board_Tile*> Board_Tile::get_next_states(const unordered_map<int, pair<int, int> >& goal_state_map) {
 	vector<pair<int, char> > directions = {
 		make_pair(-3,'U'),
 		make_pair( 3,'D'),
@@ -91,18 +92,17 @@ vector<Board_Tile*> Board_Tile::get_next_states() {
 		char dir = direction.second;
 
 		if (check_within_bounds(next_pos, dir)) {
-			vector<int> new_board = this->tile_board;
+			vector<int> next_tile_board = this->tile_board;
 
 			// swap tiles
-			swap(new_board[next_pos], new_board[blank_pos]);
+			swap(next_tile_board[next_pos], next_tile_board[blank_pos]);
 
 			string updated_moves = this->moves_from_start + dir;
 			int total_moves = this->num_moves + 1;
+			Board_Tile* next_state = new Board_Tile(next_tile_board, updated_moves, total_moves, next_pos);
+			next_state->set_manhattan_distance(goal_state_map);
 
-			// create and append new object with updated values
-			next_states.push_back(
-				new Board_Tile(new_board, updated_moves, total_moves, next_pos)
-			);
+			next_states.push_back(next_state);
 		}
 	}
 	return next_states;
@@ -134,13 +134,18 @@ bool Board_Tile::check_within_bounds(int i, char dir) {
 // 
 // @params a unordered map, mapping int elements in the goal state to their final positions
 // @return total manhattan distance calculated from adding thn manhattan distance of each element
-int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int> >& goal_state) {
+void Board_Tile::set_manhattan_distance(const unordered_map<int, pair<int, int> >& goal_state_map) {
 	int manhattan_distance = 0;
+
 	for (int i = 0; i < 9; ++i) {
-		pair<int, int> pos = goal_state.at(this->tile_board[i]);
-		manhattan_distance += abs(floor(i / 3) - pos.first) + abs((i % 3) - pos.second);
+		int key = this->tile_board[i];
+		if (key != 0) {
+			pair<int, int> pos = goal_state_map.at(key);
+			manhattan_distance += abs(floor(i / 3) - pos.first) + abs((i % 3) - pos.second);
+		}
 	}
-	return manhattan_distance;
+
+	this->manhattan_distance = manhattan_distance;
 }
 
 
@@ -148,6 +153,10 @@ int Board_Tile::get_manhattan_distance(const unordered_map<int, pair<int, int> >
 
 int Board_Tile::get_num_moves() {
 	return this->num_moves;
+}
+
+int Board_Tile::get_manhattan_distance() {
+	return this->manhattan_distance;
 }
 
 string Board_Tile::get_moves_from_start() {

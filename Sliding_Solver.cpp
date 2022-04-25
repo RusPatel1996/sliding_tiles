@@ -2,9 +2,11 @@
 
 
 Sliding_Solver::Sliding_Solver(const string& start_state, string& goal_state) {
+	// call the board_tile constructors to handle the string to vec<int> conversion
 	this->starting_board = new Board_Tile(start_state);
 	this->final_board = new Board_Tile(goal_state);
 
+	// initialize the goal_state_map
 	for (int i = 0; i < 9; ++i) {
 		pair<int, int> pos = make_pair(floor(i / 3), i % 3);
 		this->goal_state_map[goal_state[i] - '0'] = pos;
@@ -38,7 +40,7 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 		Board_Tile* board = min_board.second;
 		this->tile_queue.pop();
 
-		for (Board_Tile* next_board : board->get_next_states()) {
+		for (Board_Tile* next_board : board->get_next_states(this->goal_state_map)) {
 			vector<int> key = next_board->get_board();
 			if (!visited.count(key)) {
 				// cout << *next_board << endl; // uncomment to peek under the hood
@@ -58,5 +60,5 @@ pair<int, string> Sliding_Solver::solve_puzzle()
 
 
 int Sliding_Solver::get_heuristic_distance(Board_Tile* board) {
-	return board->get_num_moves() + board->get_manhattan_distance(this->goal_state_map);
+	return board->get_num_moves() + board->get_manhattan_distance();
 }
